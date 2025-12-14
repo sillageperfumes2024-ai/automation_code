@@ -117,10 +117,28 @@ Phone: 8904620890"""
     
     # Add space
     #doc.add_paragraph()
+    # Group items by name and count quantities
+    item_counts = {}
+    for _, row in order_data.iterrows():
+        item_name = row['Lineitem name']
+        if pd.notna(item_name):
+            if item_name in item_counts:
+                item_counts[item_name] += 1
+            else:
+                item_counts[item_name] = 1
+
+    # Calculate total number of items
+    total_items = sum(item_counts.values())
     
-    # Items Section
-    #items_heading = doc.add_heading('ITEMS', level=2)
-    #items_heading.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # Add Total Items table
+    total_items_table = doc.add_table(rows=1, cols=2)
+    total_items_table.style = None
+    total_items_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    
+    # Add total items information
+    total_cells = total_items_table.rows[0].cells
+    total_cells[0].text = 'Total Items'
+    total_cells[1].text = str(total_items)
     
     # Create items table
     items_table = doc.add_table(rows=1, cols=2)
@@ -138,15 +156,6 @@ Phone: 8904620890"""
             for run in paragraph.runs:
                 run.bold = True
     
-    # Group items by name and count quantities
-    item_counts = {}
-    for _, row in order_data.iterrows():
-        item_name = row['Lineitem name']
-        if pd.notna(item_name):
-            if item_name in item_counts:
-                item_counts[item_name] += 1
-            else:
-                item_counts[item_name] = 1
     
     # Add items to table
     max_items = 5
